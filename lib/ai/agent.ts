@@ -1,0 +1,21 @@
+import { createBrainReadTool } from "./tools/brain-read";
+import { createBrainWriteTool } from "./tools/brain-write";
+import { createBrainSearchTool } from "./tools/brain-search";
+import { createBrainListTool } from "./tools/brain-list";
+import { createGmailReadTool } from "./tools/gmail-read";
+import { createGmailSendTool } from "./tools/gmail-send";
+import { createGithubIssuesTool } from "./tools/github-issues";
+import { createGithubCommentTool } from "./tools/github-comment";
+
+export function createAgentTools(userId: string) {
+  return {
+    brainRead: createBrainReadTool(userId),
+    brainWrite: createBrainWriteTool(userId),
+    brainSearch: createBrainSearchTool(userId),
+    brainList: createBrainListTool(userId),
+    gmailRead: createGmailReadTool(userId),
+    gmailSend: createGmailSendTool(userId),
+    githubIssues: createGithubIssuesTool(userId),
+    githubComment: createGithubCommentTool(userId),
+  };
+}
