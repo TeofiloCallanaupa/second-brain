@@ -10,7 +10,6 @@ import { systemPrompt } from "@/lib/ai/system-prompt";
 import { db } from "@/lib/db/client";
 import { chatMessages } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
-import { setAIContext } from "@auth0/ai-vercel";
 
 export async function POST(req: Request) {
   const session = await auth0.getSession();
@@ -20,9 +19,6 @@ export async function POST(req: Request) {
 
   const userId = session.user.sub;
   const { messages } = await req.json();
-
-  // Set AI context for Token Vault
-  setAIContext({ threadID: userId });
 
   // Persist the latest user message
   const latestMessage = messages[messages.length - 1];

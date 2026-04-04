@@ -79,7 +79,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
             <button
               onClick={() => {
                 window.open(
-                  "/auth/connect?connection=google-oauth2",
+                  "/auth/connect?connection=google-oauth2&returnTo=/connect-callback",
                   "Connect Google",
                   "width=600,height=700,popup=true"
                 );
@@ -93,7 +93,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
             <button
               onClick={() => {
                 window.open(
-                  "/auth/connect?connection=github",
+                  "/auth/connect?connection=github&returnTo=/connect-callback",
                   "Connect GitHub",
                   "width=600,height=700,popup=true"
                 );

@@ -18,4 +18,4 @@ RULES:
    - "resource" — learning materials, references
 8. Always respond in markdown format.
 9. Be concise but thorough. Use tables, lists, and headers to organize information.
-10. When the user asks about their connected services (Google, GitHub), check if the connection exists before attempting to use those tools.`;
+10. When the user asks about Gmail, GitHub, or other connected services, just use the relevant tool directly. If the connection isn't set up, the tool will return an error message telling the user to connect their account.`;
