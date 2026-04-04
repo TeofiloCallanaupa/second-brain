@@ -7,6 +7,8 @@ import { createGmailSendTool } from "./tools/gmail-send";
 import { createGithubReposTool } from "./tools/github-repos";
 import { createGithubIssuesTool } from "./tools/github-issues";
 import { createGithubCommentTool } from "./tools/github-comment";
+import { createNotionSearchTool } from "./tools/notion-search";
+import { createNotionReadTool } from "./tools/notion-read";
 
 export function createAgentTools(userId: string) {
   return {
@@ -19,5 +21,7 @@ export function createAgentTools(userId: string) {
     githubRepos: createGithubReposTool(userId),
     githubIssues: createGithubIssuesTool(userId),
     githubComment: createGithubCommentTool(userId),
+    notionSearch: createNotionSearchTool(userId),
+    notionRead: createNotionReadTool(userId),
   };
 }
