@@ -54,3 +54,10 @@ export async function getGoogleAccessToken(): Promise<string> {
 export async function getGitHubAccessToken(): Promise<string> {
   return exchangeTokenVault("github");
 }
+
+/**
+ * Get a Notion access token from Token Vault.
+ */
+export async function getNotionAccessToken(): Promise<string> {
+  return exchangeTokenVault("Notion");
+}

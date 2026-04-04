@@ -16,6 +16,7 @@ export async function GET() {
     return NextResponse.json({
       google: { connected: false },
       github: { connected: false },
+      notion: { connected: false },
     });
   }
 
@@ -46,13 +47,15 @@ export async function GET() {
     }
   }
 
-  const [googleConnected, githubConnected] = await Promise.all([
+  const [googleConnected, githubConnected, notionConnected] = await Promise.all([
     checkConnection("google-oauth2"),
     checkConnection("github"),
+    checkConnection("Notion"),
   ]);
 
   return NextResponse.json({
     google: { connected: googleConnected },
     github: { connected: githubConnected },
+    notion: { connected: notionConnected },
   });
 }

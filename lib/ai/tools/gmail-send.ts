@@ -1,13 +1,13 @@
 import { tool, zodSchema } from "ai";
 import { z } from "zod";
-import { google } from "googleapis";
-import { getGoogleAccessToken } from "@/lib/auth0-ai";
 import { logAction } from "@/lib/actions/log-action";
+import { getGoogleAccessToken } from "@/lib/auth0-ai";
+import { google } from "googleapis";
 
 export function createGmailSendTool(userId: string) {
   return tool({
     description:
-      "Send an email via the user's Gmail account.",
+      "Send an email via the user's Gmail account. The user will be asked to approve before sending.",
     inputSchema: zodSchema(
       z.object({
         to: z.string().describe("Recipient email address"),
@@ -15,13 +15,14 @@ export function createGmailSendTool(userId: string) {
         body: z.string().describe("Email body content (plain text)"),
       })
     ),
+    // This is the key: the SDK will pause execution and show approval UI
+    needsApproval: true,
     execute: async ({ to, subject, body }) => {
+      // This only runs AFTER the user approves
       try {
         const accessToken = await getGoogleAccessToken();
-
         const auth = new google.auth.OAuth2();
         auth.setCredentials({ access_token: accessToken });
-
         const gmail = google.gmail({ version: "v1", auth });
 
         const email = [
@@ -50,16 +51,11 @@ export function createGmailSendTool(userId: string) {
           riskLevel: "high",
           status: "success",
           inputSummary: `Send email to ${to}: "${subject}"`,
-          outputSummary: "Email sent successfully",
+          outputSummary: "Email sent after user approval",
         });
 
-        return {
-          success: true,
-          message: `Email sent to ${to} with subject "${subject}"`,
-        };
+        return `Email successfully sent to ${to} with subject "${subject}"`;
       } catch (error: any) {
-        console.error("[gmail-send] Error:", error?.message || error);
-
         await logAction({
           userId,
           action: "gmail.send",
@@ -67,13 +63,9 @@ export function createGmailSendTool(userId: string) {
           riskLevel: "high",
           status: "failed",
           inputSummary: `Send email to ${to}: "${subject}"`,
-          outputSummary: `Error: ${error?.message || "Unknown error"}`,
+          outputSummary: error?.message || "Failed to send email",
         });
-
-        return {
-          error:
-            "Could not access Gmail. The user needs to connect their Google account by clicking the 'Google' button in the footer bar, then try again.",
-        };
+        return `Failed to send email: ${error?.message}`;
       }
     },
   });

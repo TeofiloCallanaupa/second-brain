@@ -266,18 +266,51 @@ This creates the Google OAuth credentials that Auth0 needs to access Gmail on be
 
 ---
 
-## 9. Set Up Auth0 Guardian (for CIBA — optional)
+## 9. Set Up Notion OAuth (for Notion Pages via Token Vault)
 
-This is needed for the push-notification approval flow on high-risk actions (sending emails, commenting on GitHub).
+Like Google and GitHub, Notion connects through Auth0 Token Vault using OAuth.
 
-1. Install the **Auth0 Guardian** app on your phone:
-   - [iOS App Store](https://apps.apple.com/app/auth0-guardian/id1093447833)
-   - [Google Play Store](https://play.google.com/store/apps/details?id=com.auth0.guardian)
-2. In Auth0 Dashboard → **Security** → **Multi-factor Auth**
-3. Enable **Push Notifications** (via Guardian)
-4. Enroll your phone by scanning the QR code
+### Step 9a: Create a Notion Public Integration
 
-> We'll configure CIBA after Token Vault is working.
+1. Go to [notion.so/profile/integrations](https://www.notion.so/profile/integrations)
+2. Under **Integrations** (not "Internal integrations"), click **+ New Integration**
+3. Fill in **Basic information**:
+   - **Integration name**: `Second Brain`
+   - **Icon**: Upload any 512×512 image (required)
+   - **Associated workspace**: Select your Notion workspace
+4. Under **Authorization (OAuth)**, set the **Redirect URI**:
+   ```
+   https://YOUR_AUTH0_DOMAIN/login/callback
+   ```
+   (Replace with your actual Auth0 domain, e.g. `dev-abc123.us.auth0.com`)
+5. Under **Listing information**, fill in at minimum:
+   - **Company name**: Your name
+   - **Website**: `http://localhost:3000`
+   - **Email**: Your email
+   - Leave **Privacy policy URL** and **Terms of use URL** empty (optional for dev)
+6. Click **Create**
+7. After creation, copy the **OAuth client ID** and **OAuth client secret**
+
+### Step 9b: Configure Notion Social Connection in Auth0
+
+1. In Auth0 Dashboard → **Authentication** → **Social**
+2. Click **Create Connection** → search for **Notion**
+3. If Notion isn't listed, click **Create Custom**
+4. For **Purpose**, select **Authentication and Connected Accounts for Token Vault**
+   > Even though users won't log in with Notion, the "Authentication" option must be enabled because Auth0's account-linking flow requires it.
+5. Fill in the connection details:
+   - **Name**: `notion`
+   - **Authorization URL**: `https://api.notion.com/v1/oauth/authorize`
+   - **Token URL**: `https://api.notion.com/v1/oauth/token`
+   - **Scope**: (leave empty — Notion handles permissions via page selection)
+   - **Client ID**: OAuth client ID from Step 9a
+   - **Client Secret**: OAuth client secret from Step 9a
+6. Go to the **Applications** tab and enable both:
+   - ✅ **Second Brain** (Regular Web App)
+   - ✅ **Second Brain AI Agent** (M2M)
+7. Click **Save**
+
+> **Note:** When users connect Notion via OAuth, they choose which pages to share — Token Vault then stores and refreshes the access token automatically.
 
 ---
 

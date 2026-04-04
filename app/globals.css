@@ -202,6 +202,28 @@ body {
   margin: 1.5rem 0;
 }
 
+/* User message text — force white on blue background */
+.user-message,
+.user-message .markdown-content,
+.user-message .markdown-content p,
+.user-message .markdown-content li,
+.user-message .markdown-content td,
+.user-message .markdown-content th,
+.user-message .markdown-content strong,
+.user-message .markdown-content a,
+.user-message .markdown-content code,
+.user-message .markdown-content blockquote {
+  color: white !important;
+}
+
+.user-message .markdown-content code {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.user-message .markdown-content pre {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

@@ -126,11 +126,20 @@ const connectionTools = {
       { name: "Comment on Issue", description: "Post a comment on an issue", risk: "high" },
     ],
   },
+  notion: {
+    label: "Notion",
+    icon: "📝",
+    tools: [
+      { name: "Search Pages", description: "Search your Notion workspace", risk: "low" },
+      { name: "Read Page", description: "Read content from a Notion page", risk: "low" },
+    ],
+  },
 };
 
 interface ConnectionStatus {
   google: { connected: boolean };
   github: { connected: boolean };
+  notion: { connected: boolean };
 }
 
 function ConnectionPanel({
@@ -147,10 +156,10 @@ function ConnectionPanel({
   if (!showPanel) return null;
 
   return (
-    <div className="absolute bottom-14 left-0 w-64 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl shadow-2xl z-50 overflow-hidden animate-slide-up">
+    <div className="absolute bottom-14 left-0 w-72 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl shadow-2xl z-50 overflow-hidden animate-slide-up">
       <div className="px-4 py-3 border-b border-[var(--border-color)]">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Connections & Tools</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">Connections & Tools</h3>
           <button
             onClick={onClose}
             className="w-6 h-6 rounded-md hover:bg-[var(--bg-tertiary)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
@@ -160,17 +169,18 @@ function ConnectionPanel({
         </div>
       </div>
 
-      <div className="p-3 space-y-3 max-h-80 overflow-y-auto">
-        {(["google", "github"] as const).map((key) => {
+      <div className="p-3 space-y-3 max-h-96 overflow-y-auto">
+        {(["google", "github", "notion"] as const).map((key) => {
           const conn = connectionTools[key];
           const isConnected = connections[key]?.connected;
+          const connectionId = key === "google" ? "google-oauth2" : key === "notion" ? "Notion" : key;
 
           return (
             <div key={key} className="rounded-lg border border-[var(--border-color)] overflow-hidden">
               {/* Connection header */}
               <div className="px-3 py-2.5 bg-[var(--bg-secondary)] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm">{conn.icon}</span>
+                  <span className="text-base">{conn.icon}</span>
                   <span className="text-sm font-medium text-[var(--text-primary)]">{conn.label}</span>
                 </div>
                 {isConnected ? (
@@ -179,7 +189,7 @@ function ConnectionPanel({
                   </span>
                 ) : (
                   <button
-                    onClick={() => onConnect(key === "google" ? "google-oauth2" : "github")}
+                    onClick={() => onConnect(connectionId)}
                     className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent-blue)]/15 text-[var(--accent-blue)] font-medium hover:bg-[var(--accent-blue)]/25 transition-colors cursor-pointer"
                   >
                     Connect
@@ -190,9 +200,9 @@ function ConnectionPanel({
               {/* Tools list */}
               <div className="px-3 py-2 space-y-1.5">
                 {conn.tools.map((t) => (
-                  <div key={t.name} className="flex items-start gap-2 text-xs">
+                  <div key={t.name} className="flex items-start gap-2 text-[13px]">
                     <span
-                      className={`mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 ${
+                      className={`mt-1 w-1.5 h-1.5 rounded-full shrink-0 ${
                         isConnected
                           ? t.risk === "high"
                             ? "bg-amber-400"
@@ -215,7 +225,7 @@ function ConnectionPanel({
       </div>
 
       <div className="px-4 py-2 border-t border-[var(--border-color)]">
-        <p className="text-[10px] text-[var(--text-muted)]">
+        <p className="text-xs text-[var(--text-muted)]">
           🟢 Low risk &nbsp; 🟡 Requires approval
         </p>
       </div>
@@ -234,6 +244,7 @@ export function BrainSidebar({
   const [connections, setConnections] = useState<ConnectionStatus>({
     google: { connected: false },
     github: { connected: false },
+    notion: { connected: false },
   });
   const [showPanel, setShowPanel] = useState(false);
 
@@ -310,6 +321,10 @@ export function BrainSidebar({
           <div
             className={`w-2 h-2 rounded-full ${connections.github.connected ? "bg-emerald-400" : "bg-[var(--text-muted)]"}`}
             title={`GitHub: ${connections.github.connected ? "Connected" : "Not connected"}`}
+          />
+          <div
+            className={`w-2 h-2 rounded-full ${connections.notion.connected ? "bg-emerald-400" : "bg-[var(--text-muted)]"}`}
+            title={`Notion: ${connections.notion.connected ? "Connected" : "Not connected"}`}
           />
         </div>
       </div>
@@ -393,7 +408,7 @@ export function BrainSidebar({
             <path d="M18 15l-6-6-6 6" />
           </svg>
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => handleConnect("google-oauth2")}
             className={`flex-1 flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs transition-colors duration-150 cursor-pointer ${
@@ -425,6 +440,23 @@ export function BrainSidebar({
             <span
               className={`ml-auto w-1.5 h-1.5 rounded-full ${
                 connections.github.connected ? "bg-emerald-400" : "bg-red-400/60"
+              }`}
+            />
+          </button>
+          <button
+            onClick={() => handleConnect("Notion")}
+            className={`flex-1 flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs transition-colors duration-150 cursor-pointer ${
+              connections.notion.connected
+                ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                : "bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)]"
+            }`}
+            title={connections.notion.connected ? "Notion connected — click to reconnect" : "Connect Notion Account"}
+          >
+            <span className="text-[10px]">📝</span>
+            <span>Notion</span>
+            <span
+              className={`ml-auto w-1.5 h-1.5 rounded-full ${
+                connections.notion.connected ? "bg-emerald-400" : "bg-red-400/60"
               }`}
             />
           </button>

@@ -1,6 +1,9 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import {
+  lastAssistantMessageIsCompleteWithApprovalResponses,
+} from "ai";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -13,12 +16,15 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
   const {
     messages,
     sendMessage,
+    addToolApprovalResponse,
     status,
     setMessages,
   } = useChat({
     onFinish: () => {
       onBrainUpdate();
     },
+    // Auto-submit after user approves/denies so the model continues
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -46,6 +52,176 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
       e.preventDefault();
       handleSubmit(e);
     }
+  };
+
+  // Render a tool part based on its state
+  const renderToolPart = (part: any, i: number) => {
+    // In AI SDK v6, toolName is embedded in the type: "tool-gmailSend" -> "gmailSend"
+    const toolName = part.type.startsWith("tool-")
+      ? part.type.slice(5)
+      : part.toolName || "tool";
+    const state = part.state || "";
+    const isHighRisk = toolName === "gmailSend" || toolName === "githubComment";
+
+    // Approval requested — render the approval card
+    if (state === "approval-requested" && isHighRisk) {
+      const input = part.input || {};
+      const approvalId = part.approval?.id;
+      const isEmail = toolName === "gmailSend";
+      const title = isEmail ? "📧 Send Email" : "💬 Post Comment";
+
+      return (
+        <div
+          key={i}
+          className="my-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--bg-secondary)]"
+        >
+          {/* Header */}
+          <div className="px-4 py-3 flex items-center gap-2 border-b border-[var(--border-color)] bg-[var(--bg-tertiary)]">
+            <span className="text-amber-400 text-sm">🛡️</span>
+            <span className="text-sm font-semibold text-[var(--text-primary)]">
+              Approval Required
+            </span>
+            <span className="text-xs text-[var(--text-muted)] ml-auto">
+              {title}
+            </span>
+          </div>
+
+          {/* Preview content */}
+          <div className="px-4 py-3">
+            {isEmail ? (
+              <div className="space-y-2 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">To:</span>
+                  <span className="text-[var(--text-primary)] font-medium">
+                    {input.to}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">Subject:</span>
+                  <span className="text-[var(--text-primary)] font-medium">
+                    {input.subject}
+                  </span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
+                  <span className="text-[var(--text-muted)] text-xs block mb-1">
+                    Message:
+                  </span>
+                  <div className="text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded-lg p-3 text-xs leading-relaxed max-h-40 overflow-y-auto">
+                    {input.body}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">Repo:</span>
+                  <span className="text-[var(--text-primary)] font-medium">
+                    {input.owner}/{input.repo}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">Issue:</span>
+                  <span className="text-[var(--text-primary)] font-medium">
+                    #{input.issueNumber}
+                  </span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
+                  <span className="text-[var(--text-muted)] text-xs block mb-1">
+                    Comment:
+                  </span>
+                  <div className="text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded-lg p-3 text-xs leading-relaxed max-h-40 overflow-y-auto">
+                    {input.body}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Action buttons */}
+          <div className="px-4 py-3 border-t border-[var(--border-color)] bg-[var(--bg-tertiary)]">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  addToolApprovalResponse({
+                    id: approvalId,
+                    approved: true,
+                  })
+                }
+                className="flex-1 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Approve & Send
+              </button>
+              <button
+                onClick={() =>
+                  addToolApprovalResponse({
+                    id: approvalId,
+                    approved: false,
+                  })
+                }
+                className="flex-1 px-4 py-2 rounded-lg bg-[var(--bg-primary)] hover:bg-red-500/20 text-[var(--text-secondary)] hover:text-red-400 text-sm font-medium border border-[var(--border-color)] transition-colors cursor-pointer flex items-center justify-center gap-2"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+                Deny
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Output available — tool executed successfully (after approval)
+    if (state === "output-available" && isHighRisk) {
+      return (
+        <div key={i} className="my-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <span>✅</span>
+            <span className="font-medium">{toolName === "gmailSend" ? "Email sent" : "Comment posted"}</span>
+            <span className="text-emerald-300/60 ml-auto">approved</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Output error — tool denied or failed
+    if (state === "output-error") {
+      return (
+        <div key={i} className="my-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-xs">
+          <div className="flex items-center gap-2 text-red-400">
+            <span>❌</span>
+            <span className="font-medium">Action failed or denied</span>
+          </div>
+        </div>
+      );
+    }
+
+    // Generic tool call states (loading, completed)
+    return (
+      <div
+        key={i}
+        className="mb-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-xs"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[var(--accent-blue)]">⚡</span>
+          <span className="text-[var(--text-secondary)] font-medium">
+            {toolName}
+          </span>
+          {(state === "input-streaming" || state === "input-available") && (
+            <span className="text-[var(--accent-yellow)]">running...</span>
+          )}
+          {state === "output-available" && (
+            <span className="text-[var(--accent-green)]">done ✓</span>
+          )}
+          {state === "approval-requested" && (
+            <span className="text-amber-400">awaiting approval...</span>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -95,7 +271,7 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
             <div
               className={`max-w-[80%] rounded-xl px-4 py-3 ${
                 message.role === "user"
-                  ? "bg-[var(--accent-blue)] text-white rounded-br-sm"
+                  ? "bg-[var(--accent-blue)] text-white rounded-br-sm user-message"
                   : "glass rounded-bl-sm"
               }`}
             >
@@ -108,34 +284,7 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
 
               {/* Render message parts */}
               {message.parts?.map((part, i) => {
-                if (part.type.startsWith("tool-")) {
-                  const toolName =
-                    "toolName" in part ? (part as Record<string, unknown>).toolName as string : "tool";
-                  const state = "state" in part ? (part as Record<string, unknown>).state as string : "";
-                  return (
-                    <div
-                      key={i}
-                      className="mb-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-color)] text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-[var(--accent-blue)]">⚡</span>
-                        <span className="text-[var(--text-secondary)] font-medium">
-                          {toolName}
-                        </span>
-                        {state === "call" && (
-                          <span className="text-[var(--accent-yellow)]">
-                            running...
-                          </span>
-                        )}
-                        {(state === "result" || state === "output") && (
-                          <span className="text-[var(--accent-green)]">
-                            done ✓
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
+                // Text parts
                 if (part.type === "text" && "text" in part) {
                   return (
                     <div key={i} className="markdown-content">
@@ -145,6 +294,24 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
                     </div>
                   );
                 }
+
+                // Step-start parts (multi-step boundaries)
+                if (part.type === "step-start") {
+                  return i > 0 ? (
+                    <div key={i} className="my-1 border-t border-[var(--border-color)] opacity-30" />
+                  ) : null;
+                }
+
+                // Tool parts: SDK v6 uses `tool-${toolName}` or `dynamic-tool`
+                // Check if it's a tool part by looking for toolName or toolCallId
+                if (
+                  part.type.startsWith("tool-") ||
+                  part.type === "dynamic-tool" ||
+                  "toolCallId" in part
+                ) {
+                  return renderToolPart(part, i);
+                }
+
                 return null;
               })}
             </div>

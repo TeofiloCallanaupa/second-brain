@@ -1,12 +1,12 @@
 import { tool, zodSchema } from "ai";
 import { z } from "zod";
-import { getGitHubAccessToken } from "@/lib/auth0-ai";
 import { logAction } from "@/lib/actions/log-action";
+import { getGitHubAccessToken } from "@/lib/auth0-ai";
 
 export function createGithubCommentTool(userId: string) {
   return tool({
     description:
-      "Comment on a GitHub issue.",
+      "Comment on a GitHub issue. The user will be asked to approve before posting.",
     inputSchema: zodSchema(
       z.object({
         owner: z
@@ -19,7 +19,9 @@ export function createGithubCommentTool(userId: string) {
           .describe("The comment body (markdown supported)"),
       })
     ),
+    needsApproval: true,
     execute: async ({ owner, repo, issueNumber, body }) => {
+      // This only runs AFTER the user approves
       try {
         const accessToken = await getGitHubAccessToken();
 
@@ -30,8 +32,8 @@ export function createGithubCommentTool(userId: string) {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               Accept: "application/vnd.github.v3+json",
-              "Content-Type": "application/json",
               "User-Agent": "SecondBrain-Agent",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ body }),
           }
@@ -52,17 +54,11 @@ export function createGithubCommentTool(userId: string) {
           riskLevel: "high",
           status: "success",
           inputSummary: `Comment on ${owner}/${repo}#${issueNumber}`,
-          outputSummary: `Comment posted: ${comment.html_url}`,
+          outputSummary: "Comment posted after user approval",
         });
 
-        return {
-          success: true,
-          message: `Comment posted on ${owner}/${repo}#${issueNumber}`,
-          url: comment.html_url,
-        };
+        return `Comment posted on ${owner}/${repo}#${issueNumber}: ${comment.html_url}`;
       } catch (error: any) {
-        console.error("[github-comment] Error:", error?.message || error);
-
         await logAction({
           userId,
           action: "github.comment",
@@ -70,13 +66,9 @@ export function createGithubCommentTool(userId: string) {
           riskLevel: "high",
           status: "failed",
           inputSummary: `Comment on ${owner}/${repo}#${issueNumber}`,
-          outputSummary: `Error: ${error?.message || "Unknown error"}`,
+          outputSummary: error?.message || "Failed to post comment",
         });
-
-        return {
-          error:
-            "Could not access GitHub. The user needs to connect their GitHub account by clicking the 'GitHub' button in the footer bar, then try again.",
-        };
+        return `Failed to post comment: ${error?.message}`;
       }
     },
   });
