@@ -71,40 +71,6 @@ export function DashboardClient({ user }: DashboardClientProps) {
             </div>
             <span className="text-[var(--text-secondary)]">{user.name}</span>
           </div>
-
-          <span className="text-[var(--border-color)]">|</span>
-
-          {/* Connection buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                window.open(
-                  "/auth/connect?connection=google-oauth2&returnTo=/connect-callback",
-                  "Connect Google",
-                  "width=600,height=700,popup=true"
-                );
-              }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-150 cursor-pointer"
-              title="Connect Google Account"
-            >
-              <span className="text-xs">📧</span>
-              <span>Google</span>
-            </button>
-            <button
-              onClick={() => {
-                window.open(
-                  "/auth/connect?connection=github&returnTo=/connect-callback",
-                  "Connect GitHub",
-                  "width=600,height=700,popup=true"
-                );
-              }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-150 cursor-pointer"
-              title="Connect GitHub Account"
-            >
-              <span className="text-xs">🐙</span>
-              <span>GitHub</span>
-            </button>
-          </div>
         </div>
 
         <div className="flex items-center gap-3">
