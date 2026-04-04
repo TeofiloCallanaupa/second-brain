@@ -1,11 +1,16 @@
 import { groq } from "@ai-sdk/groq";
-import { streamText, stepCountIs, convertToModelMessages } from "ai";
+import {
+  streamText,
+  stepCountIs,
+  convertToModelMessages,
+} from "ai";
 import { auth0 } from "@/lib/auth0";
 import { createAgentTools } from "@/lib/ai/agent";
 import { systemPrompt } from "@/lib/ai/system-prompt";
 import { db } from "@/lib/db/client";
 import { chatMessages } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { setAIContext } from "@auth0/ai-vercel";
 
 export async function POST(req: Request) {
   const session = await auth0.getSession();
@@ -16,14 +21,19 @@ export async function POST(req: Request) {
   const userId = session.user.sub;
   const { messages } = await req.json();
 
+  // Set AI context for Token Vault
+  setAIContext({ threadID: userId });
+
   // Persist the latest user message
   const latestMessage = messages[messages.length - 1];
   if (latestMessage?.role === "user") {
-    // Extract text content from parts
-    const textContent = latestMessage.parts
-      ?.filter((p: { type: string }) => p.type === "text")
-      ?.map((p: { text: string }) => p.text)
-      ?.join("") || latestMessage.content || "";
+    const textContent =
+      latestMessage.parts
+        ?.filter((p: { type: string }) => p.type === "text")
+        ?.map((p: { text: string }) => p.text)
+        ?.join("") ||
+      latestMessage.content ||
+      "";
 
     if (textContent) {
       await db.insert(chatMessages).values({
@@ -35,7 +45,6 @@ export async function POST(req: Request) {
   }
 
   const tools = createAgentTools(userId);
-
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
