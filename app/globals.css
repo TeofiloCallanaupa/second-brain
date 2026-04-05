@@ -1,22 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1a2035;
-  --bg-glass: rgba(17, 24, 39, 0.7);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(99, 102, 241, 0.3);
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent-blue: #6366f1;
-  --accent-blue-hover: #818cf8;
+  /* Amber Obsidian — warm dark palette */
+  --bg-primary: #131313;
+  --bg-secondary: #1c1b1b;
+  --bg-tertiary: #201f1f;
+  --bg-elevated: #2a2a2a;
+  --border-color: #2a2a2a;
+  --border-subtle: rgba(78, 70, 54, 0.2);
+  --text-primary: #e8e4de;
+  --text-secondary: #8a8580;
+  --text-muted: #6b6560;
+  --accent-primary: #d4a844;
+  --accent-primary-hover: #f2c35c;
+  --accent-primary-text: #402d00;
   --accent-green: #22c55e;
   --accent-yellow: #eab308;
   --accent-orange: #f97316;
   --accent-red: #ef4444;
-  --accent-purple: #a855f7;
+  --accent-link: #b3caff;
+  --surface-container: #201f1f;
+  --surface-container-high: #2a2a2a;
+  --outline: #9a8f7d;
+  --outline-variant: #4e4636;
 }
 
 * {
@@ -53,18 +59,13 @@ body {
   background: var(--text-muted);
 }
 
-/* Glass effect utility */
-.glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
+/* Surface utility */
+.surface {
+  background: var(--bg-secondary);
 }
 
-/* Glow effect */
-.glow {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15),
-    0 0 60px rgba(99, 102, 241, 0.05);
+.surface-elevated {
+  background: var(--bg-elevated);
 }
 
 /* Risk level colors */
@@ -169,17 +170,17 @@ body {
 }
 
 .markdown-content a {
-  color: var(--accent-blue);
+  color: var(--accent-link);
   text-decoration: none;
 }
 
 .markdown-content a:hover {
-  color: var(--accent-blue-hover);
+  color: var(--accent-primary-hover);
   text-decoration: underline;
 }
 
 .markdown-content blockquote {
-  border-left: 3px solid var(--accent-blue);
+  border-left: 3px solid var(--outline-variant);
   padding-left: 1rem;
   margin-left: 0;
   color: var(--text-muted);
@@ -188,7 +189,7 @@ body {
 
 .markdown-content input[type="checkbox"] {
   margin-right: 0.5rem;
-  accent-color: var(--accent-blue);
+  accent-color: var(--accent-primary);
 }
 
 .markdown-content strong {
@@ -202,7 +203,7 @@ body {
   margin: 1.5rem 0;
 }
 
-/* User message text — force white on blue background */
+/* User message text — force dark on amber background */
 .user-message,
 .user-message .markdown-content,
 .user-message .markdown-content p,
@@ -213,15 +214,15 @@ body {
 .user-message .markdown-content a,
 .user-message .markdown-content code,
 .user-message .markdown-content blockquote {
-  color: white !important;
+  color: #402d00 !important;
 }
 
 .user-message .markdown-content code {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(64, 45, 0, 0.15);
 }
 
 .user-message .markdown-content pre {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(64, 45, 0, 0.1);
 }
 
 /* Animations */
@@ -258,15 +259,7 @@ body {
   }
 }
 
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.25);
-  }
-}
+
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;

@@ -47,14 +47,14 @@ export function ApprovalCard({
   };
 
   const isEmail = actionType === "gmail-send";
-  const title = isEmail ? "📧 Send Email" : "💬 Post Comment";
-  const icon = isEmail ? "📧" : "🐙";
+  const title = isEmail ? "Send Email" : "Post Comment";
+  const icon = isEmail ? "G" : "GH";
 
   return (
     <div className="my-2 rounded-xl border border-[var(--border-color)] overflow-hidden bg-[var(--bg-secondary)]">
       {/* Header */}
       <div className="px-4 py-3 flex items-center gap-2 border-b border-[var(--border-color)] bg-[var(--bg-tertiary)]">
-        <span className="text-amber-400 text-sm">🛡️</span>
+        <span className="text-amber-400 text-sm font-semibold">!</span>
         <span className="text-sm font-semibold text-[var(--text-primary)]">
           Approval Required
         </span>
@@ -158,11 +158,11 @@ export function ApprovalCard({
         )}
 
         {status === "approving" && (
-          <div className="flex items-center justify-center gap-2 py-1 text-sm text-[var(--accent-blue)]">
+          <div className="flex items-center justify-center gap-2 py-1 text-sm text-[var(--accent-primary)]">
             <div className="flex gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] animate-bounce [animation-delay:0ms]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] animate-bounce [animation-delay:150ms]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] animate-bounce [animation-delay:300ms]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-bounce [animation-delay:0ms]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-bounce [animation-delay:150ms]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-bounce [animation-delay:300ms]" />
             </div>
             <span>Sending...</span>
           </div>
@@ -170,21 +170,21 @@ export function ApprovalCard({
 
         {status === "approved" && (
           <div className="flex items-center gap-2 py-1 text-sm text-emerald-400">
-            <span>✅</span>
+            <span className="font-semibold">Done</span>
             <span>{resultMessage}</span>
           </div>
         )}
 
         {status === "denied" && (
           <div className="flex items-center gap-2 py-1 text-sm text-[var(--text-muted)]">
-            <span>🚫</span>
+            <span className="font-medium">Denied</span>
             <span>{resultMessage}</span>
           </div>
         )}
 
         {status === "error" && (
           <div className="flex items-center gap-2 py-1 text-sm text-red-400">
-            <span>❌</span>
+            <span className="font-semibold">Error</span>
             <span>{resultMessage}</span>
           </div>
         )}

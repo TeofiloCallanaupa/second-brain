@@ -1,0 +1,46 @@
+{
+  "name": "projects/3548637667017931592",
+  "projectId": "3548637667017931592",
+  "title": "Second Brain - AI Knowledge Hub",
+  "visibility": "PRIVATE",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {
+    "colorMode": "DARK",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#d4a844",
+    "designSystemName": "Amber Obsidian",
+    "designSystemId": "assets/a03fc84506de466e8f0ee39740652eda"
+  },
+  "screens": {
+    "landing-v1": {
+      "id": "fe38d3146bcd45a1a7bebeb47d7616b7",
+      "sourceScreen": "projects/3548637667017931592/screens/fe38d3146bcd45a1a7bebeb47d7616b7",
+      "width": 2560,
+      "height": 5348
+    },
+    "landing-v2": {
+      "id": "684ddcd350b54fdd8b411a37d06ca91e",
+      "sourceScreen": "projects/3548637667017931592/screens/684ddcd350b54fdd8b411a37d06ca91e",
+      "width": 2560,
+      "height": 4104
+    },
+    "dashboard-v1": {
+      "id": "531efb7dea2744d6848af18f027ee6a3",
+      "sourceScreen": "projects/3548637667017931592/screens/531efb7dea2744d6848af18f027ee6a3",
+      "width": 2560,
+      "height": 2048
+    },
+    "dashboard-v2": {
+      "id": "5cf5890095fa4fceb60dd8bb9a33876f",
+      "sourceScreen": "projects/3548637667017931592/screens/5cf5890095fa4fceb60dd8bb9a33876f",
+      "width": 2560,
+      "height": 2048
+    }
+  },
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}

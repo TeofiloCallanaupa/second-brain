@@ -11,9 +11,9 @@ interface DocumentViewerProps {
 
 const categoryLabels: Record<string, { label: string; color: string }> = {
   journal: { label: "Journal", color: "var(--accent-yellow)" },
-  project: { label: "Project", color: "var(--accent-blue)" },
+  project: { label: "Project", color: "var(--accent-primary)" },
   area: { label: "Area", color: "var(--accent-green)" },
-  resource: { label: "Resource", color: "var(--accent-purple)" },
+  resource: { label: "Resource", color: "var(--accent-primary)" },
   general: { label: "General", color: "var(--text-muted)" },
 };
 
@@ -25,7 +25,7 @@ export function DocumentViewer({ entry, onClose }: DocumentViewerProps) {
       {/* Header */}
       <div className="h-12 px-4 flex items-center justify-between border-b border-[var(--border-color)] shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-lg">📄</span>
+          <span className="text-xs font-medium text-[var(--text-secondary)]">Doc</span>
           <span className="font-semibold text-sm text-[var(--text-primary)] truncate">
             {entry.title}
           </span>

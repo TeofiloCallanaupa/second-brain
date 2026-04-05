@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Second Brain - Your Knowledge, Connected</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#4c4844",
+                    "tertiary-container": "#8eaef4",
+                    "inverse-on-surface": "#313030",
+                    "on-tertiary-fixed": "#001a42",
+                    "primary-fixed-dim": "#eec059",
+                    "on-tertiary-fixed-variant": "#214584",
+                    "outline": "#9a8f7d",
+                    "surface-container-highest": "#353534",
+                    "surface-bright": "#3a3939",
+                    "surface": "#131313",
+                    "on-primary-fixed-variant": "#5c4300",
+                    "background": "#131313",
+                    "surface-container-low": "#1c1b1b",
+                    "on-secondary-container": "#bdb7b2",
+                    "surface-container-high": "#2a2a2a",
+                    "on-primary-fixed": "#261a00",
+                    "secondary-fixed": "#e8e1db",
+                    "primary-fixed": "#ffdf9f",
+                    "on-error-container": "#ffdad6",
+                    "on-surface-variant": "#d2c5b1",
+                    "surface-variant": "#353534",
+                    "secondary": "#ccc5c0",
+                    "inverse-surface": "#e5e2e1",
+                    "secondary-fixed-dim": "#ccc5c0",
+                    "primary-container": "#d4a844",
+                    "surface-tint": "#eec059",
+                    "surface-container-lowest": "#0e0e0e",
+                    "tertiary-fixed-dim": "#aec6ff",
+                    "primary": "#f2c35c",
+                    "error-container": "#93000a",
+                    "tertiary": "#b3caff",
+                    "on-secondary-fixed-variant": "#4a4642",
+                    "surface-dim": "#131313",
+                    "on-primary": "#402d00",
+                    "on-surface": "#e5e2e1",
+                    "error": "#ffb4ab",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#d8e2ff",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary": "#002e6a",
+                    "on-secondary": "#33302c",
+                    "inverse-primary": "#795900",
+                    "surface-container": "#201f1f",
+                    "on-primary-container": "#553e00",
+                    "on-tertiary-container": "#1b407f",
+                    "on-secondary-fixed": "#1e1b18",
+                    "outline-variant": "#4e4636"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #111111;
+            color: #e8e4de;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar Component -->
+<nav class="bg-transparent font-inter tracking-tight text-sm font-medium flex justify-between items-center w-full px-8 py-6 max-w-7xl mx-auto top-0 sticky z-50">
+<div class="text-lg font-semibold text-neutral-200 dark:text-[#e8e4de]">Second Brain</div>
+<div class="flex items-center gap-8">
+<button class="text-neutral-400 dark:text-[#d2c5b1] hover:text-[#f2c35c] transition-colors duration-200 opacity-80 active:opacity-100">Sign In</button>
+</div>
+</nav>
+<main class="max-w-[1100px] mx-auto px-8 md:px-12">
+<!-- Section 1: Hero -->
+<section class="pt-24 pb-32 flex flex-col items-start text-left">
+<h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-8 leading-[1.1]">
+                Your knowledge, connected.
+            </h1>
+<p class="text-xl md:text-2xl text-on-surface-variant max-w-2xl mb-12 leading-relaxed font-light">
+                An AI assistant that connects your Gmail, GitHub, and Notion into one searchable brain. It reads, organizes, and acts — with your approval.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary-container text-on-primary font-semibold px-8 py-4 rounded-lg hover:brightness-110 transition-all duration-200">
+                    Get started
+                </button>
+</div>
+</section>
+<!-- Section 2: Integrations -->
+<section class="py-12 border-t border-outline-variant/20">
+<div class="flex flex-wrap gap-x-8 gap-y-4 text-secondary font-medium tracking-wide text-sm opacity-60">
+<span>Gmail</span>
+<span class="text-outline-variant/40">·</span>
+<span>GitHub</span>
+<span class="text-outline-variant/40">·</span>
+<span>Notion</span>
+<span class="text-outline-variant/40">·</span>
+<span>Token Vault</span>
+</div>
+</section>
+<!-- Section 3: Features -->
+<section class="py-32 grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12 items-start">
+<div class="flex flex-col space-y-4">
+<h3 class="text-lg font-bold text-on-surface">Connect your tools</h3>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                    Link Gmail, GitHub, and Notion. Auth0 Token Vault handles credentials securely.
+                </p>
+</div>
+<div class="flex flex-col space-y-4">
+<h3 class="text-lg font-bold text-on-surface">Chat with context</h3>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                    Ask questions across all services in one conversation.
+                </p>
+</div>
+<div class="flex flex-col space-y-4">
+<h3 class="text-lg font-bold text-on-surface">Approve before it acts</h3>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                    AI shows exactly what it wants to do. Approve or deny inline.
+                </p>
+</div>
+</section>
+<!-- Section 4: How it works -->
+<section class="py-32 border-t border-outline-variant/10">
+<div class="max-w-xl">
+<div class="space-y-24">
+<div class="flex flex-col gap-4">
+<span class="text-primary-container font-mono text-sm tracking-widest uppercase">Step 01</span>
+<h2 class="text-3xl font-bold text-on-surface">Connect your accounts</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                            Sign in with Auth0, then link Gmail, GitHub, and Notion. Token Vault stores and refreshes your OAuth tokens so no API keys ever touch our server.
+                        </p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-primary-container font-mono text-sm tracking-widest uppercase">Step 02</span>
+<h2 class="text-3xl font-bold text-on-surface">Ask your AI anything</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                            Chat naturally. The AI reads your emails, searches your GitHub repos, and browses Notion pages in real time — all in one conversation.
+                        </p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-primary-container font-mono text-sm tracking-widest uppercase">Step 03</span>
+<h2 class="text-3xl font-bold text-on-surface">Approve before anything is sent</h2>
+<p class="text-on-surface-variant leading-relaxed">
+                            When the AI wants to send an email or post a comment, it shows you exactly what it will do. You approve or deny before anything goes out.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="bg-transparent font-inter text-xs tracking-wide leading-relaxed w-full py-12 flex justify-center items-center border-t border-outline-variant/10">
+<div class="text-neutral-500 dark:text-[#ccc5c0]">
+            Built for the Auth0 Hackathon
+        </div>
+</footer>
+</body></html>

@@ -23,8 +23,8 @@ const riskColors: Record<string, string> = {
 const statusIcons: Record<string, string> = {
   success: "✓",
   failed: "✗",
-  pending_approval: "⏳",
-  denied: "🚫",
+  pending_approval: "…",
+  denied: "—",
 };
 
 interface ActionLogModalProps {
@@ -57,13 +57,13 @@ export function ActionLogModal({ onClose }: ActionLogModalProps) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl max-h-[80vh] rounded-2xl glass glow flex flex-col overflow-hidden"
+        className="w-full max-w-2xl max-h-[80vh] rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">📋</span>
+            <span className="text-sm font-semibold text-[var(--text-secondary)]">Logs</span>
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">
               Action Logs
             </h2>
@@ -94,7 +94,7 @@ export function ActionLogModal({ onClose }: ActionLogModalProps) {
         <div className="flex-1 overflow-y-auto px-6 py-3">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-6 h-6 border-2 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : logs.length === 0 ? (
             <div className="text-center py-12 text-[var(--text-muted)]">
