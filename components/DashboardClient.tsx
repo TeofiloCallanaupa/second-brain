@@ -76,7 +76,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[var(--bg-primary)]">
       {/* Top Nav */}
-      <nav className="h-14 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center px-5 shrink-0 gap-4">
+      <nav className="h-14 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center px-3 md:px-5 shrink-0 gap-2 md:gap-4">
         {/* Left: Logo + Knowledge toggle */}
         <div className="flex items-center gap-4">
           <a href="/" className="text-sm font-semibold text-[var(--accent-primary)] tracking-tight hover:opacity-80 transition-opacity">
@@ -104,9 +104,9 @@ export function DashboardClient({ user }: DashboardClientProps) {
         </div>
 
         {/* Right: Connections + User */}
-        <div className="ml-auto flex items-center gap-5">
+        <div className="ml-auto flex items-center gap-3 md:gap-5">
           {/* Connection indicators */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             {[
               { key: "google", label: "Google", provider: "google-oauth2", connected: connections.google, tools: ["Gmail", "Send", "Calendar"] },
               { key: "github", label: "GitHub", provider: "github", connected: connections.github, tools: ["Repos", "Issues", "Comment"] },
@@ -124,9 +124,9 @@ export function DashboardClient({ user }: DashboardClientProps) {
                       svc.connected ? "bg-emerald-400" : "bg-red-400/60"
                     }`}
                   />
-                  <span>{svc.label}</span>
+                  <span className="hidden sm:inline">{svc.label}</span>
                 </div>
-                <span className={`text-[10px] pl-3 ${svc.connected ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/40"}`}>
+                <span className={`text-[10px] pl-3 hidden md:block ${svc.connected ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/40"}`}>
                   {svc.tools.join(" · ")}
                 </span>
               </button>
@@ -143,7 +143,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
             </div>
             <a
               href="/auth/logout"
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors hidden sm:inline"
             >
               Sign out
             </a>
@@ -152,7 +152,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
       </nav>
 
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Brain sidebar (slide-out panel) */}
         {showBrain && (
           <BrainSidebar

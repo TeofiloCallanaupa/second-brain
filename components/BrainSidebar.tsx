@@ -124,7 +124,7 @@ export function BrainSidebar({
   const tree = buildTree(entries);
 
   return (
-    <div className="w-72 border-r border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col shrink-0 animate-slide-left">
+    <div className="w-72 md:relative absolute inset-y-0 left-0 z-20 border-r border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col shrink-0 animate-slide-left">
       {/* Header */}
       <div className="h-12 px-4 flex items-center justify-between border-b border-[var(--border-color)] shrink-0">
         <div className="flex items-center gap-2">
