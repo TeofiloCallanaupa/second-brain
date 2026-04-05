@@ -20,6 +20,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
   const [selectedEntry, setSelectedEntry] = useState<BrainEntry | null>(null);
   const [showLogs, setShowLogs] = useState(false);
   const [showBrain, setShowBrain] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [connections, setConnections] = useState({
     google: false,
     github: false,
@@ -105,11 +106,11 @@ export function DashboardClient({ user }: DashboardClientProps) {
 
         {/* Right: Connections + User */}
         <div className="ml-auto flex items-center gap-3 md:gap-5">
-          {/* Connection indicators */}
-          <div className="flex items-center gap-2 md:gap-3">
+          {/* Connection indicators — desktop only */}
+          <div className="hidden sm:flex items-center gap-3">
             {[
-              { key: "google", label: "Google", provider: "google-oauth2", connected: connections.google, tools: ["Gmail", "Send", "Calendar"] },
-              { key: "github", label: "GitHub", provider: "github", connected: connections.github, tools: ["Repos", "Issues", "Comment"] },
+              { key: "google", label: "Google", provider: "google-oauth2", connected: connections.google, tools: ["Gmail", "Calendar"] },
+              { key: "github", label: "GitHub", provider: "github", connected: connections.github, tools: ["Repos", "Issues"] },
               { key: "notion", label: "Notion", provider: "Notion", connected: connections.notion, tools: ["Search", "Read"] },
             ].map((svc) => (
               <button
@@ -124,7 +125,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
                       svc.connected ? "bg-emerald-400" : "bg-red-400/60"
                     }`}
                   />
-                  <span className="hidden sm:inline">{svc.label}</span>
+                  <span>{svc.label}</span>
                 </div>
                 <span className={`text-[10px] pl-3 hidden md:block ${svc.connected ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/40"}`}>
                   {svc.tools.join(" · ")}
@@ -133,20 +134,76 @@ export function DashboardClient({ user }: DashboardClientProps) {
             ))}
           </div>
 
-          {/* Divider */}
-          <div className="w-px h-5 bg-[var(--border-color)]" />
+          {/* Divider — desktop only */}
+          <div className="hidden sm:block w-px h-5 bg-[var(--border-color)]" />
 
-          {/* User */}
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-xs text-[var(--accent-primary-text)] font-medium">
+          {/* Desktop sign out */}
+          <div className="hidden sm:flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-[var(--accent-primary)] flex items-center justify-center text-xs text-[var(--accent-primary-text)] font-medium" title={user.email}>
               {user.name[0]?.toUpperCase() || "U"}
             </div>
             <a
               href="/auth/logout"
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors hidden sm:inline"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
             >
               Sign out
             </a>
+          </div>
+
+          {/* Mobile: Avatar dropdown */}
+          <div className="sm:hidden relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="w-8 h-8 rounded-md flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
+            </button>
+
+            {showUserMenu && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setShowUserMenu(false)} />
+                <div className="absolute right-0 top-full mt-2 w-56 rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-xl z-40 overflow-hidden animate-fade-in">
+                  <div className="px-4 py-3 border-b border-[var(--border-color)]">
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{user.name}</p>
+                    {user.email !== user.name && (
+                      <p className="text-xs text-[var(--text-muted)] truncate">{user.email}</p>
+                    )}
+                  </div>
+
+                  <div className="py-1">
+                    <p className="px-4 py-1.5 text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-semibold">Connections</p>
+                    {[
+                      { key: "google", label: "Google", provider: "google-oauth2", connected: connections.google, tools: "Gmail · Calendar" },
+                      { key: "github", label: "GitHub", provider: "github", connected: connections.github, tools: "Repos · Issues" },
+                      { key: "notion", label: "Notion", provider: "Notion", connected: connections.notion, tools: "Search · Read" },
+                    ].map((svc) => (
+                      <button
+                        key={svc.key}
+                        onClick={() => { handleConnect(svc.provider); setShowUserMenu(false); }}
+                        className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-tertiary)] transition-colors text-left"
+                      >
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${svc.connected ? "bg-emerald-400" : "bg-red-400/60"}`} />
+                        <div>
+                          <span className="text-sm text-[var(--text-primary)]">{svc.label}</span>
+                          <span className="text-[10px] text-[var(--text-muted)] block">{svc.connected ? svc.tools : "Tap to connect"}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="border-t border-[var(--border-color)] py-1">
+                    <a
+                      href="/auth/logout"
+                      className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--bg-tertiary)] transition-colors text-sm text-red-400"
+                    >
+                      Sign out
+                    </a>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </nav>
