@@ -69,9 +69,9 @@ export function DashboardClient({ user }: DashboardClientProps) {
       <nav className="h-14 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center px-5 shrink-0 gap-4">
         {/* Left: Logo + Knowledge toggle */}
         <div className="flex items-center gap-4">
-          <span className="text-sm font-semibold text-[var(--accent-primary)] tracking-tight">
+          <a href="/" className="text-sm font-semibold text-[var(--accent-primary)] tracking-tight hover:opacity-80 transition-opacity">
             Second Brain
-          </span>
+          </a>
           <button
             onClick={() => setShowBrain(!showBrain)}
             className={`text-xs px-2.5 py-1 rounded-md transition-colors duration-150 ${

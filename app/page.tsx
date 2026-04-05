@@ -1,12 +1,8 @@
 import { auth0 } from "@/lib/auth0";
-import { redirect } from "next/navigation";
 
 export default async function LandingPage() {
   const session = await auth0.getSession();
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
+  const isLoggedIn = !!session?.user;
 
   return (
     <div
@@ -40,14 +36,14 @@ export default async function LandingPage() {
           Second Brain
         </span>
         <a
-          href="/auth/login"
+          href={isLoggedIn ? "/dashboard" : "/auth/login"}
           style={{
             fontSize: "14px",
-            color: "#8a8580",
+            color: isLoggedIn ? "#d4a844" : "#8a8580",
             textDecoration: "none",
           }}
         >
-          Sign in
+          {isLoggedIn ? "Dashboard" : "Sign in"}
         </a>
       </nav>
 
@@ -247,20 +243,42 @@ export default async function LandingPage() {
       <footer
         style={{
           padding: "32px 48px",
-          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "24px",
           fontSize: "13px",
           color: "#6b6560",
           borderTop: "1px solid #2a2a2a",
         }}
       >
-        Built for the{" "}
+        <span>
+          Built for the{" "}
+          <a
+            href="https://authorizedtoact.devpost.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#d4a844", textDecoration: "none" }}
+          >
+            Auth0 Hackathon
+          </a>
+        </span>
+        <span style={{ color: "#2a2a2a" }}>|</span>
         <a
-          href="https://authorizedtoact.devpost.com/"
+          href="https://github.com/TeofiloCallanaupa/second-brain"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "#d4a844", textDecoration: "none" }}
+          style={{ color: "#8a8580", textDecoration: "none" }}
         >
-          Auth0 Hackathon
+          GitHub
+        </a>
+        <a
+          href="https://www.linkedin.com/in/teofilocallanaupa/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#8a8580", textDecoration: "none" }}
+        >
+          LinkedIn
         </a>
       </footer>
     </div>

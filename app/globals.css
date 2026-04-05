@@ -29,6 +29,13 @@
   box-sizing: border-box;
 }
 
+button,
+a,
+[role="button"],
+summary {
+  cursor: pointer;
+}
+
 html,
 body {
   margin: 0;

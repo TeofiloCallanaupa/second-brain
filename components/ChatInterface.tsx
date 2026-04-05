@@ -337,7 +337,7 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
             </button>
           </form>
           <p className="text-center text-[10px] text-[var(--text-muted)] mt-2 opacity-60">
-            llama-3.3-70b via Groq — Actions require your approval
+            Actions require your approval
           </p>
         </div>
       </div>
