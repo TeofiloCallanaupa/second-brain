@@ -56,14 +56,15 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
       ? part.type.slice(5)
       : part.toolName || "tool";
     const state = part.state || "";
-    const isHighRisk = toolName === "gmailSend" || toolName === "githubComment";
+    const isHighRisk = toolName === "gmailSend" || toolName === "githubComment" || toolName === "calendarCreate";
 
     // Approval requested
     if (state === "approval-requested" && isHighRisk) {
       const input = part.input || {};
       const approvalId = part.approval?.id;
       const isEmail = toolName === "gmailSend";
-      const title = isEmail ? "Send Email" : "Post Comment";
+      const isCalendar = toolName === "calendarCreate";
+      const title = isEmail ? "Send Email" : isCalendar ? "Create Event" : "Post Comment";
 
       return (
         <div
@@ -97,6 +98,41 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
                     {input.body}
                   </div>
                 </div>
+              </div>
+            ) : isCalendar ? (
+              <div className="space-y-2 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">Event:</span>
+                  <span className="text-[var(--text-primary)] font-medium">{input.summary}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">Start:</span>
+                  <span className="text-[var(--text-primary)]">{input.startDateTime ? new Date(input.startDateTime).toLocaleString() : ""}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-[var(--text-muted)] shrink-0 w-14">End:</span>
+                  <span className="text-[var(--text-primary)]">{input.endDateTime ? new Date(input.endDateTime).toLocaleString() : ""}</span>
+                </div>
+                {input.location && (
+                  <div className="flex gap-2">
+                    <span className="text-[var(--text-muted)] shrink-0 w-14">Where:</span>
+                    <span className="text-[var(--text-primary)]">{input.location}</span>
+                  </div>
+                )}
+                {input.attendees?.length > 0 && (
+                  <div className="flex gap-2">
+                    <span className="text-[var(--text-muted)] shrink-0 w-14">With:</span>
+                    <span className="text-[var(--text-primary)]">{input.attendees.join(", ")}</span>
+                  </div>
+                )}
+                {input.description && (
+                  <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
+                    <span className="text-[var(--text-muted)] text-xs block mb-1">Notes:</span>
+                    <div className="text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded-lg p-3 text-xs leading-relaxed max-h-40 overflow-y-auto">
+                      {input.description}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-2 text-sm">
@@ -150,25 +186,30 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
 
     // Success
     if (state === "output-available" && isHighRisk) {
+      const actionLabel = toolName === "gmailSend" ? "Email sent" : toolName === "calendarCreate" ? "Event created" : "Comment posted";
       return (
         <div key={i} className="my-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs">
           <div className="flex items-center gap-2 text-emerald-400">
             <span className="font-semibold">Done</span>
-            <span className="font-medium">{toolName === "gmailSend" ? "Email sent" : "Comment posted"}</span>
+            <span className="font-medium">{actionLabel}</span>
             <span className="text-emerald-300/60 ml-auto">approved</span>
           </div>
         </div>
       );
     }
 
-    // Error
+    // Error / Denied
     if (state === "output-error") {
+      const actionLabel = toolName === "gmailSend" ? "Send email" : toolName === "calendarCreate" ? "Create calendar event" : toolName === "githubComment" ? "Post GitHub comment" : "Action";
       return (
         <div key={i} className="my-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-xs">
           <div className="flex items-center gap-2 text-red-400">
-            <span className="font-semibold">Failed</span>
-            <span className="font-medium">Action failed or denied</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6L6 18" /><path d="M6 6l12 12" />
+            </svg>
+            <span className="font-medium">{actionLabel} was denied.</span>
           </div>
+          <p className="text-[var(--text-muted)] mt-1 ml-5">Let me know if you&apos;d like to try again or need help with something else.</p>
         </div>
       );
     }
@@ -195,9 +236,9 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
 
   const suggestions = [
     { title: "Check my recent emails", desc: "Read and summarize your latest Gmail messages" },
+    { title: "What's on my calendar?", desc: "View upcoming events from Google Calendar" },
     { title: "What issues are open?", desc: "Browse GitHub issues across your repositories" },
-    { title: "Search my Notion", desc: "Find and read pages in your Notion workspace" },
-    { title: "What do I know?", desc: "Search through your saved knowledge entries" },
+    { title: "Schedule a meeting", desc: "Create a calendar event with your approval" },
   ];
 
   return (

@@ -9,6 +9,8 @@ import { createGithubIssuesTool } from "./tools/github-issues";
 import { createGithubCommentTool } from "./tools/github-comment";
 import { createNotionSearchTool } from "./tools/notion-search";
 import { createNotionReadTool } from "./tools/notion-read";
+import { createCalendarReadTool } from "./tools/calendar-read";
+import { createCalendarCreateTool } from "./tools/calendar-create";
 
 export function createAgentTools(userId: string) {
   return {
@@ -23,5 +25,7 @@ export function createAgentTools(userId: string) {
     githubComment: createGithubCommentTool(userId),
     notionSearch: createNotionSearchTool(userId),
     notionRead: createNotionReadTool(userId),
+    calendarRead: createCalendarReadTool(userId),
+    calendarCreate: createCalendarCreateTool(userId),
   };
 }

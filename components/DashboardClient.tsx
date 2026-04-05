@@ -108,22 +108,27 @@ export function DashboardClient({ user }: DashboardClientProps) {
           {/* Connection indicators */}
           <div className="flex items-center gap-3">
             {[
-              { key: "google", label: "Gmail", provider: "google-oauth2", connected: connections.google },
-              { key: "github", label: "GitHub", provider: "github", connected: connections.github },
-              { key: "notion", label: "Notion", provider: "Notion", connected: connections.notion },
+              { key: "google", label: "Google", provider: "google-oauth2", connected: connections.google, tools: ["Gmail", "Send", "Calendar"] },
+              { key: "github", label: "GitHub", provider: "github", connected: connections.github, tools: ["Repos", "Issues", "Comment"] },
+              { key: "notion", label: "Notion", provider: "Notion", connected: connections.notion, tools: ["Search", "Read"] },
             ].map((svc) => (
               <button
                 key={svc.key}
                 onClick={() => handleConnect(svc.provider)}
-                className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
-                title={svc.connected ? `${svc.label} connected` : `Connect ${svc.label}`}
+                className="flex flex-col items-start gap-0.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+                title={svc.connected ? `${svc.label} connected — ${svc.tools.join(", ")}` : `Connect ${svc.label}`}
               >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    svc.connected ? "bg-emerald-400" : "bg-red-400/60"
-                  }`}
-                />
-                <span>{svc.label}</span>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      svc.connected ? "bg-emerald-400" : "bg-red-400/60"
+                    }`}
+                  />
+                  <span>{svc.label}</span>
+                </div>
+                <span className={`text-[10px] pl-3 ${svc.connected ? "text-[var(--text-muted)]" : "text-[var(--text-muted)]/40"}`}>
+                  {svc.tools.join(" · ")}
+                </span>
               </button>
             ))}
           </div>

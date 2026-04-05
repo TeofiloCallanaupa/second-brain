@@ -6,7 +6,7 @@ import {
 } from "ai";
 import { auth0 } from "@/lib/auth0";
 import { createAgentTools } from "@/lib/ai/agent";
-import { systemPrompt } from "@/lib/ai/system-prompt";
+import { getSystemPrompt } from "@/lib/ai/system-prompt";
 import { db } from "@/lib/db/client";
 import { chatMessages } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
@@ -45,10 +45,10 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: groq("llama-3.3-70b-versatile"),
-    system: systemPrompt,
+    system: getSystemPrompt(),
     messages: modelMessages,
     tools,
-    stopWhen: stepCountIs(5),
+    stopWhen: stepCountIs(3),
     onFinish: async ({ text }) => {
       if (text) {
         await db.insert(chatMessages).values({
