@@ -40,6 +40,7 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
     if (!textarea || !textarea.value.trim()) return;
     sendMessage({ text: textarea.value });
     textarea.value = "";
+    textarea.style.height = "auto";
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -312,15 +313,23 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
             <textarea
               ref={inputRef}
               onKeyDown={handleKeyDown}
+              onInput={(e) => {
+                const el = e.currentTarget;
+                el.style.height = "auto";
+                const next = Math.min(el.scrollHeight, 200);
+                el.style.height = next + "px";
+                el.style.overflowY = el.scrollHeight > 200 ? "auto" : "hidden";
+              }}
               placeholder="Message Second Brain..."
               rows={1}
               className="w-full resize-none rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] px-4 py-3 pr-12 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--outline)] transition-colors duration-200"
+              style={{ maxHeight: "200px", overflowY: "hidden" }}
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] disabled:opacity-30 disabled:hover:bg-[var(--accent-primary)] flex items-center justify-center transition-colors duration-150"
+              className="absolute right-3 bottom-3 w-8 h-8 rounded-lg bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] disabled:opacity-30 disabled:hover:bg-[var(--accent-primary)] flex items-center justify-center transition-colors duration-150"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary-text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />

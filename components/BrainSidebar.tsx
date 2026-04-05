@@ -11,13 +11,7 @@ interface BrainSidebarProps {
   onToggleCollapse: () => void;
 }
 
-const categoryLabels: Record<string, string> = {
-  journal: "J",
-  project: "P",
-  area: "A",
-  resource: "R",
-  general: "D",
-};
+
 
 // Tree structures
 interface TreeNode {
@@ -65,9 +59,6 @@ function TreeItem({
   const [expanded, setExpanded] = useState(true);
   const hasChildren = node.children.length > 0;
   const isSelected = selectedPath === node.fullPath;
-  const icon = node.entry
-    ? categoryLabels[node.entry.category || "general"]
-    : "/";
 
   return (
     <div>
@@ -86,9 +77,25 @@ function TreeItem({
         }`}
         style={{ paddingLeft: `${12 + depth * 16}px` }}
       >
-        <span className="text-[10px] font-medium text-[var(--text-muted)] w-4 text-center shrink-0">
-          {hasChildren ? (expanded ? "−" : "+") : icon}
-        </span>
+        {hasChildren ? (
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`shrink-0 text-[var(--text-muted)] transition-transform duration-150 ${expanded ? "rotate-90" : ""}`}
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        ) : (
+          <svg width="12" height="12" viewBox="0 0 24 24" className="shrink-0 text-[var(--text-muted)]">
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+          </svg>
+        )}
         <span className="truncate text-[13px]">{node.name}</span>
       </button>
       {hasChildren && expanded && (
