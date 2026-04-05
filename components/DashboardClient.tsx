@@ -59,8 +59,18 @@ export function DashboardClient({ user }: DashboardClientProps) {
     fetchConnections();
   }, [fetchBrainEntries, fetchConnections]);
 
-  const handleConnect = (provider: string) => {
-    window.location.href = `/auth/connect/${provider}`;
+  const handleConnect = (connection: string) => {
+    const popup = window.open(
+      `/auth/connect?connection=${connection}&returnTo=/connect-callback`,
+      `Connect ${connection}`,
+      "width=600,height=700,popup=true"
+    );
+    const interval = setInterval(() => {
+      if (popup?.closed) {
+        clearInterval(interval);
+        fetchConnections();
+      }
+    }, 500);
   };
 
   return (
