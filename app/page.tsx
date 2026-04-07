@@ -106,7 +106,8 @@ export default async function LandingPage() {
             paddingTop: "32px",
             borderTop: "1px solid #2a2a2a",
             display: "flex",
-            gap: "40px",
+            flexWrap: "wrap" as const,
+            gap: "24px",
           }}
         >
           {["Gmail", "GitHub", "Notion", "Token Vault"].map((label) => (
@@ -123,8 +124,8 @@ export default async function LandingPage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "48px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "32px",
             marginTop: "80px",
             paddingBottom: "80px",
           }}

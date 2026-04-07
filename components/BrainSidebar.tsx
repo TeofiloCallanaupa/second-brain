@@ -121,7 +121,6 @@ export function BrainSidebar({
   onSelectEntry,
   onToggleCollapse,
 }: BrainSidebarProps) {
-  const tree = buildTree(entries);
 
   return (
     <div className="w-72 md:relative absolute inset-y-0 left-0 z-20 border-r border-[var(--border-color)] bg-[var(--bg-secondary)] flex flex-col shrink-0 animate-slide-left">
@@ -147,24 +146,50 @@ export function BrainSidebar({
       </div>
 
       {/* Entries list */}
-      <div className="flex-1 overflow-y-auto py-2">
-        {entries.length === 0 ? (
-          <div className="px-4 py-8 text-center">
-            <p className="text-sm text-[var(--text-muted)]">No entries yet</p>
-            <p className="text-xs text-[var(--text-muted)] mt-1 opacity-60">
-              Chat with the AI to create knowledge entries
-            </p>
+      <div className="flex-1 overflow-y-auto">
+        {/* AI Preferences — pinned section */}
+        {entries.filter(e => e.path === "AI_PREFERENCES" || e.path === "preferences").map((prefEntry) => (
+          <div key="ai-prefs" className="px-3 py-2 border-b border-[var(--border-color)]">
+            <button
+              onClick={() => onSelectEntry(prefEntry)}
+              className={`w-full text-left flex items-center gap-2.5 px-2 py-2 rounded-lg transition-colors duration-100 ${
+                selectedPath === "AI_PREFERENCES" || selectedPath === "preferences"
+                  ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
+                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 opacity-60">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <div>
+                <span className="text-xs font-semibold tracking-wide">AI PREFERENCES</span>
+                <span className="text-[10px] text-[var(--text-muted)] block">Formatting rules for the AI</span>
+              </div>
+            </button>
           </div>
-        ) : (
-          tree.map((node) => (
-            <TreeItem
-              key={node.fullPath}
-              node={node}
-              selectedPath={selectedPath}
-              onSelectEntry={onSelectEntry}
-            />
-          ))
-        )}
+        ))}
+
+        {/* Regular entries */}
+        <div className="py-2">
+          {entries.filter(e => e.path !== "AI_PREFERENCES" && e.path !== "preferences").length === 0 ? (
+            <div className="px-4 py-8 text-center">
+              <p className="text-sm text-[var(--text-muted)]">No entries yet</p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 opacity-60">
+                Chat with the AI to create knowledge entries
+              </p>
+            </div>
+          ) : (
+            buildTree(entries.filter(e => e.path !== "AI_PREFERENCES" && e.path !== "preferences")).map((node) => (
+              <TreeItem
+                key={node.fullPath}
+                node={node}
+                selectedPath={selectedPath}
+                onSelectEntry={onSelectEntry}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

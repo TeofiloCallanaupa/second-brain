@@ -48,6 +48,7 @@ export async function POST(req: Request) {
     system: getSystemPrompt(),
     messages: modelMessages,
     tools,
+    maxRetries: 2,
     stopWhen: stepCountIs(3),
     onFinish: async ({ text }) => {
       if (text) {

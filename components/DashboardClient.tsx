@@ -231,6 +231,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
           <DocumentViewer
             entry={selectedEntry}
             onClose={() => setSelectedEntry(null)}
+            onSave={fetchBrainEntries}
           />
         )}
       </div>
