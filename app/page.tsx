@@ -83,7 +83,7 @@ export default async function LandingPage() {
         </p>
 
         <a
-          href="/auth/login"
+          href={isLoggedIn ? "/dashboard" : "/auth/login"}
           style={{
             display: "inline-block",
             padding: "12px 28px",
@@ -96,7 +96,7 @@ export default async function LandingPage() {
             border: "none",
           }}
         >
-          Get started
+          {isLoggedIn ? "Go to Dashboard" : "Get started"}
         </a>
 
         {/* Integrations row */}
