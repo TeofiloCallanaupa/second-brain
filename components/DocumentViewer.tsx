@@ -9,6 +9,7 @@ interface DocumentViewerProps {
   entry: BrainEntry;
   onClose: () => void;
   onSave?: () => void;
+  onDelete?: () => void;
 }
 
 const categoryLabels: Record<string, { label: string; color: string }> = {
@@ -19,11 +20,29 @@ const categoryLabels: Record<string, { label: string; color: string }> = {
   general: { label: "General", color: "var(--text-muted)" },
 };
 
-export function DocumentViewer({ entry, onClose, onSave }: DocumentViewerProps) {
+export function DocumentViewer({ entry, onClose, onSave, onDelete }: DocumentViewerProps) {
   const catInfo = categoryLabels[entry.category || "general"] || categoryLabels.general;
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(entry.content);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const isPreferences = entry.path === "AI_PREFERENCES" || entry.path === "preferences";
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch("/api/brain", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: entry.path }),
+      });
+      if (res.ok) {
+        onDelete?.();
+        onClose();
+      }
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -71,6 +90,18 @@ export function DocumentViewer({ entry, onClose, onSave }: DocumentViewerProps) 
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                 <path d="m15 5 4 4" />
+              </svg>
+            </button>
+          )}
+          {/* Delete */}
+          {!editing && !isPreferences && (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="w-7 h-7 rounded-lg hover:bg-red-500/10 flex items-center justify-center text-[var(--text-muted)] hover:text-red-400 transition-colors duration-150"
+              title="Delete"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
               </svg>
             </button>
           )}
@@ -148,6 +179,25 @@ export function DocumentViewer({ entry, onClose, onSave }: DocumentViewerProps) 
               {entry.content}
             </ReactMarkdown>
           </div>
+        </div>
+      )}
+
+      {/* Delete confirmation */}
+      {confirmDelete && (
+        <div className="px-4 py-3 border-t border-red-500/20 bg-red-500/5 flex items-center gap-2 shrink-0">
+          <span className="text-xs text-red-400 flex-1">Delete this entry?</span>
+          <button
+            onClick={handleDelete}
+            className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition-colors"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => setConfirmDelete(false)}
+            className="px-3 py-1.5 rounded-lg border border-[var(--border-color)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            Cancel
+          </button>
         </div>
       )}
     </div>

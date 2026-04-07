@@ -148,12 +148,12 @@ export function BrainSidebar({
       {/* Entries list */}
       <div className="flex-1 overflow-y-auto">
         {/* AI Preferences — pinned section */}
-        {entries.filter(e => e.path === "AI_PREFERENCES" || e.path === "preferences").map((prefEntry) => (
+        {entries.filter(e => e.path === "AI_PREFERENCES").map((prefEntry) => (
           <div key="ai-prefs" className="px-3 py-2 border-b border-[var(--border-color)]">
             <button
               onClick={() => onSelectEntry(prefEntry)}
               className={`w-full text-left flex items-center gap-2.5 px-2 py-2 rounded-lg transition-colors duration-100 ${
-                selectedPath === "AI_PREFERENCES" || selectedPath === "preferences"
+                selectedPath === "AI_PREFERENCES"
                   ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]"
                   : "text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)]"
               }`}
@@ -172,7 +172,7 @@ export function BrainSidebar({
 
         {/* Regular entries */}
         <div className="py-2">
-          {entries.filter(e => e.path !== "AI_PREFERENCES" && e.path !== "preferences").length === 0 ? (
+          {entries.filter(e => e.path !== "AI_PREFERENCES").length === 0 ? (
             <div className="px-4 py-8 text-center">
               <p className="text-sm text-[var(--text-muted)]">No entries yet</p>
               <p className="text-xs text-[var(--text-muted)] mt-1 opacity-60">
@@ -180,7 +180,7 @@ export function BrainSidebar({
               </p>
             </div>
           ) : (
-            buildTree(entries.filter(e => e.path !== "AI_PREFERENCES" && e.path !== "preferences")).map((node) => (
+            buildTree(entries.filter(e => e.path !== "AI_PREFERENCES")).map((node) => (
               <TreeItem
                 key={node.fullPath}
                 node={node}

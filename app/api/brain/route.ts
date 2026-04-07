@@ -150,12 +150,31 @@ export async function GET() {
       .from(brainEntries)
       .where(eq(brainEntries.userId, userId));
   } else {
-    // Ensure existing users have the preferences entry
-    const hasPreferences = entries.some((e) => e.path === "AI_PREFERENCES" || e.path === "preferences");
-    if (!hasPreferences) {
+    const hasNew = entries.some((e) => e.path === "AI_PREFERENCES");
+    const hasOld = entries.some((e) => e.path === "preferences");
+
+    if (hasNew && hasOld) {
+      // Cleanup: delete the old entry
+      await db.delete(brainEntries).where(and(eq(brainEntries.userId, userId), eq(brainEntries.path, "preferences")));
+      entries = entries.filter((e) => e.path !== "preferences");
+    } else if (hasOld && !hasNew) {
+      // Migrate: rename old to new
+      await db.update(brainEntries).set({ path: "AI_PREFERENCES", title: "AI Preferences" }).where(and(eq(brainEntries.userId, userId), eq(brainEntries.path, "preferences")));
+      const idx = entries.findIndex((e) => e.path === "preferences");
+      if (idx !== -1) { entries[idx] = { ...entries[idx], path: "AI_PREFERENCES" }; }
+    } else if (!hasNew && !hasOld) {
+      // Seed new preferences entry
       const prefEntry = STARTER_ENTRIES.find((e) => e.path === "AI_PREFERENCES")!;
       await db.insert(brainEntries).values({ userId, ...prefEntry });
       entries.push({ ...prefEntry, updatedAt: new Date() });
+    }
+
+    // Fix: repopulate if AI_PREFERENCES exists but is empty
+    const prefIdx = entries.findIndex((e) => e.path === "AI_PREFERENCES");
+    if (prefIdx !== -1 && (!entries[prefIdx].content || entries[prefIdx].content.trim() === "")) {
+      const defaultContent = STARTER_ENTRIES.find((e) => e.path === "AI_PREFERENCES")!.content;
+      await db.update(brainEntries).set({ content: defaultContent }).where(and(eq(brainEntries.userId, userId), eq(brainEntries.path, "AI_PREFERENCES")));
+      entries[prefIdx] = { ...entries[prefIdx], content: defaultContent };
     }
   }
 
@@ -189,6 +208,30 @@ export async function PUT(req: Request) {
   await db
     .update(brainEntries)
     .set({ content, updatedAt: new Date() })
+    .where(and(eq(brainEntries.userId, userId), eq(brainEntries.path, path)));
+
+  return Response.json({ success: true });
+}
+
+export async function DELETE(req: Request) {
+  const session = await auth0.getSession();
+  if (!session?.user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const userId = session.user.sub;
+  const { path } = await req.json();
+
+  if (!path) {
+    return Response.json({ error: "path required" }, { status: 400 });
+  }
+
+  if (path === "AI_PREFERENCES") {
+    return Response.json({ error: "Cannot delete AI preferences" }, { status: 403 });
+  }
+
+  await db
+    .delete(brainEntries)
     .where(and(eq(brainEntries.userId, userId), eq(brainEntries.path, path)));
 
   return Response.json({ success: true });

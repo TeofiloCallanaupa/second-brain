@@ -43,25 +43,45 @@ export async function POST(req: Request) {
   const tools = createAgentTools(userId);
   const modelMessages = await convertToModelMessages(messages);
 
-  const result = streamText({
-    model: groq("llama-3.3-70b-versatile"),
-    system: getSystemPrompt(),
-    messages: modelMessages,
-    tools,
-    maxRetries: 2,
-    stopWhen: stepCountIs(3),
-    onFinish: async ({ text }) => {
-      if (text) {
-        await db.insert(chatMessages).values({
-          userId,
-          role: "assistant",
-          content: text,
-        });
-      }
-    },
-  });
+  try {
+    const result = streamText({
+      model: groq("llama-3.3-70b-versatile"),
+      system: getSystemPrompt(),
+      messages: modelMessages,
+      tools,
+      maxRetries: 2,
+      stopWhen: stepCountIs(3),
+      onError: async (err) => {
+        console.error("streamText error:", err);
+      },
+      onFinish: async ({ text }) => {
+        if (text) {
+          await db.insert(chatMessages).values({
+            userId,
+            role: "assistant",
+            content: text,
+          });
+        }
+      },
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (err: unknown) {
+    console.error("Chat route error:", err);
+
+    // Fallback: retry without tools for malformed tool call errors
+    const errMsg = err instanceof Error ? err.message : "";
+    if (errMsg.includes("Failed to call a function")) {
+      const fallback = streamText({
+        model: groq("llama-3.3-70b-versatile"),
+        system: getSystemPrompt(),
+        messages: modelMessages,
+      });
+      return fallback.toUIMessageStreamResponse();
+    }
+
+    return new Response("Something went wrong", { status: 500 });
+  }
 }
 
 export async function GET() {

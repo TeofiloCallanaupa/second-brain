@@ -21,6 +21,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
   const [showLogs, setShowLogs] = useState(false);
   const [showBrain, setShowBrain] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [chatKey, setChatKey] = useState(0);
   const [connections, setConnections] = useState({
     google: false,
     github: false,
@@ -101,6 +102,15 @@ export function DashboardClient({ user }: DashboardClientProps) {
             className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] px-2.5 py-1 rounded-md transition-colors duration-150"
           >
             Logs
+          </button>
+          <button
+            onClick={() => setChatKey(k => k + 1)}
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] px-2.5 py-1 rounded-md transition-colors duration-150 flex items-center gap-1"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span className="hidden sm:inline">New Chat</span>
           </button>
         </div>
 
@@ -224,7 +234,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
         )}
 
         {/* Chat Interface (centered) */}
-        <ChatInterface onBrainUpdate={fetchBrainEntries} />
+        <ChatInterface key={chatKey} onBrainUpdate={fetchBrainEntries} />
 
         {/* Document Viewer (slide-out) */}
         {selectedEntry && (
@@ -232,6 +242,7 @@ export function DashboardClient({ user }: DashboardClientProps) {
             entry={selectedEntry}
             onClose={() => setSelectedEntry(null)}
             onSave={fetchBrainEntries}
+            onDelete={fetchBrainEntries}
           />
         )}
       </div>

@@ -4,15 +4,18 @@ import { useChat } from "@ai-sdk/react";
 import {
   lastAssistantMessageIsCompleteWithApprovalResponses,
 } from "ai";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 interface ChatInterfaceProps {
   onBrainUpdate: () => void;
+  chatKey?: number;
 }
 
-export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
+export function ChatInterface({ onBrainUpdate, chatKey }: ChatInterfaceProps) {
+  const [error, setError] = useState<string | null>(null);
+
   const {
     messages,
     sendMessage,
@@ -22,6 +25,16 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
   } = useChat({
     onFinish: () => {
       onBrainUpdate();
+    },
+    onError: (err) => {
+      const msg = err.message?.toLowerCase() || "";
+      if (msg.includes("rate") || msg.includes("429")) {
+        setError("Rate limit reached. Please wait a moment and try again.");
+      } else if (msg.includes("network") || msg.includes("fetch")) {
+        setError("Connection issue. Check your internet and try again.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     },
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
   });
@@ -198,9 +211,13 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
       );
     }
 
-    // Error / Denied
+    // Error / Denied — only show for high-risk actions the user actually denied
     if (state === "output-error") {
-      const actionLabel = toolName === "gmailSend" ? "Send email" : toolName === "calendarCreate" ? "Create calendar event" : toolName === "githubComment" ? "Post GitHub comment" : "Action";
+      if (!isHighRisk) {
+        // Hide errors for read-only tools (malformed Groq calls, etc.)
+        return null;
+      }
+      const actionLabel = toolName === "gmailSend" ? "Send email" : toolName === "calendarCreate" ? "Create calendar event" : "Post GitHub comment";
       return (
         <div key={i} className="my-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-xs">
           <div className="flex items-center gap-2 text-red-400">
@@ -350,7 +367,21 @@ export function ChatInterface({ onBrainUpdate }: ChatInterfaceProps) {
       {/* Input area — centered, pinned to bottom */}
       <div className="border-t border-[var(--border-color)] bg-[var(--bg-primary)]">
         <div className="max-w-[720px] mx-auto px-6 py-4">
-          <form onSubmit={handleSubmit} className="relative">
+          {/* Error banner */}
+          {error && (
+            <div className="mb-3 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400 animate-fade-in">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+                <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
+              </svg>
+              <span className="flex-1">{error}</span>
+              <button onClick={() => setError(null)} className="shrink-0 hover:text-red-300 transition-colors">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          )}
+          <form onSubmit={(e) => { setError(null); handleSubmit(e); }} className="relative">
             <textarea
               ref={inputRef}
               onKeyDown={handleKeyDown}
