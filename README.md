@@ -160,6 +160,8 @@ second-brain-app/
 
 Auth0 Vibe Coding Hackathon — Demonstrating agentic AI with secure credential management through Auth0 Token Vault.
 
+[DevPost Submission](https://devpost.com/software/second-brain-7uqxec)
+
 ## License
 
 MIT
